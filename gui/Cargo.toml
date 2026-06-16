@@ -1,0 +1,12 @@
+[package]
+name = "asnux-gui"
+version = "1.0.0"
+edition = "2021"
+description = "ASNUX Audio Engine GUI - Configure low-latency audio settings"
+
+[dependencies]
+eframe = "0.28"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+log = "0.4"
+env_logger = "0.11"

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASNUX - Low-Latency Audio Engine for Linux</title>
+    <meta name="description" content="ASNUX : Moteur audio basse latence pour Linux. Equivalent ASIO4ALL. Driver ALSA, GUI, 20 formats de package.">
+    <meta name="keywords" content="ASNUX, audio, linux, low latency, ASIO4ALL, ALSA, driver, kernel, rust, DAW, VST">
+    <meta name="author" content="devfrp">
+    <meta property="og:title" content="ASNUX — Low-Latency Audio Engine for Linux">
+    <meta property="og:description" content="Moteur audio basse latence pour Linux. Équivalent libre d'ASIO4ALL. Driver ALSA, 20 formats de package.">
+    <meta property="og:url" content="https://devfrp.github.io/asnux/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <link rel="canonical" href="https://devfrp.github.io/asnux/">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="#" class="nav-logo">ASNUX</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#quick-install">Installation rapide</a></li>
+            <li><a href="#features">Fonctionnalités</a></li>
+            <li><a href="#download">Téléchargement</a></li>
+            <li><a href="#install">Installation</a></li>
+            <li><a href="#gui">Interface</a></li>
+            <li><a href="#docs">Documentation</a></li>
+            <li><a href="#specs">Spécifications</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="https://github.com/devfrp/asnux" target="_blank">GitHub</a></li>
+            <li><a class="portfolio-btn" href="https://devfrp.github.io" target="_blank">Accéder à mon portefeuille</a></li>
+        </ul>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="hero-content">
+        <div class="hero-logo">
+            <svg viewBox="0 0 256 256" class="hero-svg">
+                <rect x="8" y="8" width="240" height="240" rx="32" fill="#1a1a2e" stroke="#00d4aa" stroke-width="4"/>
+                <circle cx="128" cy="120" r="70" fill="none" stroke="#00d4aa" stroke-width="6"/>
+                <circle cx="128" cy="120" r="35" fill="none" stroke="#00d4aa" stroke-width="5" stroke-dasharray="8 4"/>
+                <circle cx="128" cy="120" r="12" fill="#00d4aa"/>
+                <line x1="128" y1="50" x2="128" y2="72" stroke="#00d4aa" stroke-width="4" stroke-linecap="round"/>
+                <line x1="128" y1="168" x2="128" y2="190" stroke="#00d4aa" stroke-width="4" stroke-linecap="round"/>
+                <line x1="58" y1="120" x2="80" y2="120" stroke="#00d4aa" stroke-width="4" stroke-linecap="round"/>
+                <line x1="176" y1="120" x2="198" y2="120" stroke="#00d4aa" stroke-width="4" stroke-linecap="round"/>
+                <text x="128" y="230" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="14">ASNUX</text>
+            </svg>
+        </div>
+        <h1>ASNUX <span class="version">v1.0</span></h1>
+        <p class="hero-subtitle">Moteur audio basse latence pour Linux</p>
+        <p class="hero-desc">ASNUX est un moteur audio basse latence conçu pour remplacer ASIO4ALL sous Linux. Il fournit un driver noyau ALSA virtuel, un daemon systemd temps réel et une interface graphique eframe/egui écrite en Rust. Compatible avec n'importe quelle DAW supportant ALSA (REAPER, Ardour, Bitwig, LMMS...) et intégré à PulseAudio/PipeWire pour une utilisation transparente.</p>
+        <div class="hero-actions">
+            <a href="#download" class="btn btn-primary">Télécharger</a>
+            <a href="#install" class="btn btn-secondary">Guide d'installation</a>
+        </div>
+    </div>
+</header>
+
+<section id="quick-install" class="section section-curl">
+    <div class="container">
+        <div class="curl-banner">
+            <div class="curl-header">
+                <span class="curl-icon">⬇</span>
+                <h2>Installation en une commande</h2>
+            </div>
+            <p class="curl-desc">Détection automatique de votre distribution. Fonctionne sur Debian, Ubuntu, Fedora, Arch, openSUSE, Slackware et bien d'autres.</p>
+            <div class="curl-box">
+                <code id="curl-cmd">curl -sSL https://devfrp.github.io/asnux/install.sh | sudo bash</code>
+                <button class="btn-copy" onclick="copyCurl()" title="Copier">📋 Copier</button>
+            </div>
+            <p class="curl-note">Vous pouvez aussi <a href="https://devfrp.github.io/asnux/install.sh" target="_blank">télécharger le script</a> et l'inspecter avant exécution.</p>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="section">
+    <div class="container">
+        <h2 class="section-title">Fonctionnalités</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#00d4aa" stroke-width="3"/><circle cx="24" cy="24" r="10" fill="none" stroke="#00d4aa" stroke-width="2.5" stroke-dasharray="4 2"/><circle cx="24" cy="24" r="4" fill="#00d4aa"/></svg>
+                </div>
+                <h3>Basse latence</h3>
+                <p>Buffer configurable de 16 à 8192 échantillons. Priorité temps réel pour les flux audio.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 48 48"><rect x="8" y="12" width="32" height="24" rx="3" fill="none" stroke="#00d4aa" stroke-width="3"/><rect x="14" y="18" width="8" height="12" rx="1" fill="#00d4aa" opacity="0.6"/><rect x="26" y="18" width="8" height="12" rx="1" fill="#00d4aa" opacity="0.6"/></svg>
+                </div>
+                <h3>Driver noyau ALSA</h3>
+                <p>Module kernel virtuel pour une intégration système profonde. Multi-canaux jusqu'à 8 (7.1).</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 48 48"><rect x="10" y="14" width="28" height="20" rx="4" fill="none" stroke="#00d4aa" stroke-width="3"/><line x1="16" y1="20" x2="16" y2="28" stroke="#00d4aa" stroke-width="2.5"/><line x1="20" y1="22" x2="20" y2="28" stroke="#00d4aa" stroke-width="2.5"/><line x1="24" y1="18" x2="24" y2="28" stroke="#00d4aa" stroke-width="2.5"/><line x1="28" y1="24" x2="28" y2="28" stroke="#00d4aa" stroke-width="2.5"/><line x1="32" y1="21" x2="32" y2="28" stroke="#00d4aa" stroke-width="2.5"/></svg>
+                </div>
+                <h3>Interface graphique</h3>
+                <p>GUI moderne pour régler buffer, sample rate, canaux et définir ASNUX comme moteur par défaut.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 48 48"><path d="M24 6 L24 42" stroke="#00d4aa" stroke-width="3" stroke-dasharray="2 3"/><circle cx="24" cy="16" r="6" fill="none" stroke="#00d4aa" stroke-width="2.5"/><circle cx="24" cy="32" r="6" fill="none" stroke="#00d4aa" stroke-width="2.5"/></svg>
+                </div>
+                <h3>Multi-format</h3>
+                <p>20 formats de packages : DEB, RPM, Arch, Gentoo, Alpine, Nix, Slackware, Void, Solus, AppImage, Flatpak, Snap, Docker, Homebrew...</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="none" stroke="#00d4aa" stroke-width="3"/><polyline points="16,24 22,30 32,18" fill="none" stroke="#00d4aa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h3>Moteur par défaut</h3>
+                <p>Activez ASNUX comme périphérique audio système principal. Compatible PulseAudio et PipeWire.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 48 48"><path d="M8 24 C8 12 16 6 24 6 C32 6 40 12 40 24" fill="none" stroke="#00d4aa" stroke-width="3"/><path d="M8 24 C8 36 16 42 24 42 C32 42 40 36 40 24" fill="none" stroke="#00d4aa" stroke-width="3" opacity="0.5"/><circle cx="24" cy="24" r="4" fill="#00d4aa"/></svg>
+                </div>
+                <h3>Rates pro</h3>
+                <p>De 8 kHz à 192 kHz. Formats 16/24/32 bit, float. Compatible DAW et stations audio.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="samples" class="section section-dark">
+    <div class="container">
+        <h2 class="section-title">Taux d'échantillonnage supportés</h2>
+        <div class="rates-grid">
+            <span class="rate-badge">8 kHz</span>
+            <span class="rate-badge">11.025 kHz</span>
+            <span class="rate-badge">16 kHz</span>
+            <span class="rate-badge">22.05 kHz</span>
+            <span class="rate-badge">32 kHz</span>
+            <span class="rate-badge">44.1 kHz</span>
+            <span class="rate-badge">48 kHz</span>
+            <span class="rate-badge">64 kHz</span>
+            <span class="rate-badge">88.2 kHz</span>
+            <span class="rate-badge">96 kHz</span>
+            <span class="rate-badge">176.4 kHz</span>
+            <span class="rate-badge">192 kHz</span>
+        </div>
+        <br>
+        <h2 class="section-title">Formats audio supportés</h2>
+        <div class="rates-grid">
+            <span class="rate-badge">S16_LE</span>
+            <span class="rate-badge">S24_LE</span>
+            <span class="rate-badge">S32_LE</span>
+            <span class="rate-badge">Float</span>
+        </div>
+    </div>
+</section>
+
+<section id="gui" class="section">
+    <div class="container">
+        <h2 class="section-title">Interface graphique</h2>
+        <div class="gui-showcase">
+            <div class="gui-screenshot">
+                <div class="gui-window">
+                    <div class="gui-titlebar">
+                        <span class="gui-dot red"></span>
+                        <span class="gui-dot yellow"></span>
+                        <span class="gui-dot green"></span>
+                        <span class="gui-title">ASNUX Audio Engine</span>
+                    </div>
+                    <div class="gui-content">
+                        <div class="gui-section">
+                            <div class="gui-label">Configuration du moteur audio</div>
+                            <div class="gui-row">
+                                <span>Taille du buffer (échantillons)</span>
+                                <div class="gui-slider">
+                                    <div class="gui-slider-track"><div class="gui-slider-fill" style="width:30%"></div><div class="gui-slider-thumb" style="left:30%"></div></div>
+                                    <span class="gui-value">256</span>
+                                </div>
+                            </div>
+                            <div class="gui-row">
+                                <span>Latence estimée: 5.3 ms</span>
+                            </div>
+                            <div class="gui-row">
+                                <span>Taux d'échantillonnage</span>
+                                <span class="gui-combo">48000 Hz (Studio) ▼</span>
+                            </div>
+                            <div class="gui-row">
+                                <span>Canaux</span>
+                                <span class="gui-combo">2 (Stéréo) ▼</span>
+                            </div>
+                            <div class="gui-row">
+                                <span>Périodes</span>
+                                <span class="gui-combo">4 périodes ▼</span>
+                            </div>
+                        </div>
+                        <div class="gui-section">
+                            <div class="gui-row">
+                                <span>Moteur audio par défaut</span>
+                                <span class="gui-toggle on">ON</span>
+                            </div>
+                        </div>
+                        <div class="gui-section gui-buttons">
+                            <span class="gui-btn">Charger le module</span>
+                            <span class="gui-btn">Appliquer la config</span>
+                            <span class="gui-btn">Décharger</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="specs" class="section section-dark">
+    <div class="container">
+        <h2 class="section-title">Spécifications techniques</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Système d'exploitation</h3>
+                <p>Linux kernel 5.10+. Toutes distributions : Debian, Ubuntu, Fedora, Arch, openSUSE, Gentoo, Alpine, NixOS, Void, Slackware, Solus.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Architecture</h3>
+                <p>x86_64 (AMD64). Support ARM64 (Raspberry Pi 5) en bêta. Module noyau en C, daemon en Rust, GUI en Rust/eframe.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Mémoire</h3>
+                <p>~8 Mo RAM pour le daemon. ~30 Mo pour la GUI. Empreinte minimale adaptée aux systèmes embarqués et stations audio.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Latence</h3>
+                <p>Buffer configurable de 16 à 8192 échantillons. Latence minimale théorique : 0.33 ms à 48 kHz/16 samples. Recommandé : 128-256 samples (2.7-5.3 ms).</p>
+            </div>
+            <div class="feature-card">
+                <h3>Canaux audio</h3>
+                <p>Jusqu'à 8 canaux (7.1 surround). Configurable par utilisateur. Mixage stéréo automatique si source multicanale.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Formats supportés</h3>
+                <p>S16_LE, S24_LE, S32_LE, Float 32-bit. Taux d'échantillonnage : 8 kHz à 192 kHz. Compatible tout matériel audio reconnu par ALSA.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="download" class="section section-dark">
+    <div class="container" style="text-align:center;">
+        <h2 class="section-title">Téléchargement</h2>
+        <p class="section-desc">Téléchargez la dernière version d'ASNUX pour votre distribution</p>
+        <a href="https://github.com/devfrp/asnux/releases/latest" class="btn btn-primary" style="font-size:18px;padding:16px 40px;">Télécharger la dernière version</a>
+    </div>
+</section>
+
+<section id="install" class="section">
+    <div class="container">
+        <h2 class="section-title">Installation rapide</h2>
+        <div class="install-tabs">
+            <button class="tab-btn2 active" data-distro="deb">Debian/Ubuntu</button>
+            <button class="tab-btn2" data-distro="rpm">Fedora/RHEL</button>
+            <button class="tab-btn2" data-distro="arch">Arch</button>
+            <button class="tab-btn2" data-distro="universal">Universel</button>
+        </div>
+        <div class="install-codes">
+            <pre class="install-code active" id="code-deb"><code>sudo dpkg -i asnux-1.0.0-amd64.deb
+sudo systemctl start asnux-daemon
+sudo systemctl enable asnux-daemon
+asnux-gui</code></pre>
+            <pre class="install-code" id="code-rpm"><code>sudo rpm -ivh asnux-1.0.0-1.x86_64.rpm
+sudo systemctl start asnux-daemon
+sudo systemctl enable asnux-daemon
+asnux-gui</code></pre>
+            <pre class="install-code" id="code-arch"><code>sudo pacman -U asnux-1.0.0-1-x86_64.pkg.tar.zst
+sudo systemctl start asnux-daemon
+sudo systemctl enable asnux-daemon
+asnux-gui</code></pre>
+            <pre class="install-code" id="code-universal"><code># Runfile
+chmod +x install_asnux.sh
+sudo ./install_asnux.sh
+
+# AppImage
+chmod +x ASNUX-*.AppImage
+./ASNUX-*.AppImage
+
+# Portable
+tar xzf asnux-*-linux-x86_64.tar.gz
+sudo ./asnux-*/install.sh</code></pre>
+        </div>
+
+        <div class="install-note">
+            <h3>Configuration</h3>
+            <p>Le module noyau ASNUX se charge avec les paramètres par défaut :</p>
+            <pre><code># Paramètres modulables (via /sys/module/asnux/parameters/)
+buffer_size=256     # Taille du buffer (16-8192)
+sample_rate=48000   # Taux d'échantillonnage (8000-192000)
+channels=2          # Nombre de canaux (1-8)
+periods=4           # Nombre de périodes (2-1024)</code></pre>
+        </div>
+    </div>
+</section>
+
+<section id="faq" class="section">
+    <div class="container">
+        <h2 class="section-title">FAQ</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>ASNUX remplace-t-il complètement PulseAudio ?</h3>
+                <p>Non. ASNUX est un moteur audio basse latence conçu pour les DAW et stations audio. Il coexiste avec PulseAudio/PipeWire. Vous pouvez basculer entre les deux via le panneau de configuration.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Quelle est la différence avec JACK ?</h3>
+                <p>JACK est un serveur de routage audio. ASNUX est un driver noyau virtuel. Les deux sont complémentaires : ASNUX améliore la couche ALSA, JACK gère le routage entre applications. Utilisez les deux ensemble pour un setup professionnel.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Mes plugins VST Windows fonctionnent-ils ?</h3>
+                <p>Oui, via Wine. ASNUX fournit des latences suffisamment basses pour le monitoring temps réel avec des plugins VST Windows émulés. Utilisez yabridge pour le pontage automatique.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Comment désinstaller ASNUX proprement ?</h3>
+                <p>Selon votre format d'installation : <code>sudo dpkg -r asnux</code> (DEB), <code>sudo rpm -e asnux</code> (RPM), <code>sudo pacman -R asnux</code> (Arch). Le module noyau est automatiquement retiré.</p>
+            </div>
+            <div class="feature-card">
+                <h3>ASNUX est-il compatible Secure Boot ?</h3>
+                <p>Le module noyau nécessite d'être signé pour Secure Boot. Un guide de signature est inclus dans la documentation. Alternative : désactiver temporairement Secure Boot dans le BIOS.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Puis-je utiliser ASNUX avec un DAC USB ?</h3>
+                <p>Oui. ASNUX fonctionne avec tout périphérique audio reconnu par ALSA, y compris les DAC USB, les interfaces audio FireWire, et les cartes son PCI/PCIe.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Comment savoir si ASNUX est bien actif ?</h3>
+                <p>Vérifiez en quelques commandes :</p>
+                <pre><code># Récupérer le numéro de carte ASNUX
+CARD=$(cat /proc/asound/cards | grep -i asnux | head -1 | awk '{print $1}')
+
+lsmod | grep asnux                      # Module chargé ?
+cat /proc/asound/cards | grep -i asnux   # Carte ALSA présente ?
+aplay -l | grep -i asnux                  # Périphérique playback visible ?
+cat /sys/module/asnux/parameters/buffer_size  # Paramètres accessibles ?
+amixer -c $CARD scontrols | grep ASNUX   # Contrôles mixer présents ?
+sudo dmesg | grep -i asnux               # Chargement sans erreur ?
+ls /dev/snd/controlC$CARD                # Device node existant ?</code></pre>
+                <p>Si toutes ces commandes retournent un résultat, ASNUX est opérationnel. Vous pouvez aussi tester le playback avec <code>speaker-test -D hw:0,0 -c 2 -t sine -f 440</code>.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Erreur "Invalid module format" au chargement du module ?</h3>
+                <p>Cette erreur survient quand le module noyau <code>asnux.ko</code> a été compilé pour une version différente du noyau. Vérifiez avec <code>modinfo asnux.ko | grep vermagic</code> : le vermagic doit correspondre exactement à <code>uname -r</code>. Si ce n'est pas le cas, recompilez depuis les sources :</p>
+                <pre><code>git clone https://github.com/devfrp/asnux.git
+cd asnux/kernel
+make clean
+make
+sudo cp asnux.ko /lib/modules/$(uname -r)/kernel/drivers/sound/
+sudo depmod -a
+sudo modprobe asnux</code></pre>
+                <p>Cause typique : mise à jour du noyau sans recompilation du module, ou module pré-compilé pour un noyau différent (ex. Azure vs noyau local).</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="docs" class="section">
+    <div class="container">
+        <h2 class="section-title">Documentation</h2>
+        <p class="section-desc">Documentation technique et guides pour ASNUX</p>
+        <div class="docs-layout">
+            <aside class="docs-sidebar" id="docs-sidebar"></aside>
+            <div class="docs-content" id="docs-content">
+                <div class="docs-welcome">
+                    <h3>📚 Documentation ASNUX</h3>
+                    <p>Sélectionnez un document pour afficher son contenu.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>ASNUX</h3>
+                <p>Low-Latency Audio Engine for Linux</p>
+                <p class="footer-small">Équivalent libre d'ASIO4ALL</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liens</h4>
+                <ul>
+                    <li><a href="https://github.com/devfrp/asnux">GitHub</a></li>
+                    <li><a href="https://github.com/devfrp/asnux/issues">Rapporter un bug</a></li>
+                    <li><a href="https://github.com/devfrp/asnux/releases">Releases</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Distributions</h4>
+                <ul>
+                    <li>Debian/Ubuntu/Mint</li>
+                    <li>Fedora/RHEL/openSUSE</li>
+                    <li>Arch/Gentoo/Alpine</li>
+                    <li>NixOS/Void/Solus/Slackware</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ASNUX Team. Sous licence GPL v2.</p>
+            <p class="footer-small">ASNUX n'est pas affilié à ASIO4ALL. ASIO est une marque de Steinberg Media Technologies GmbH.</p>
+        </div>
+    </div>
+</footer>
+
+<button class="theme-toggle" id="themeToggle" title="Basculer le thème" aria-label="Basculer le thème clair/sombre">🌙</button>
+
+<script>
+// Mobile nav toggle
+document.getElementById('navToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('open');
+});
+document.querySelectorAll('.nav-links a').forEach(function(a) {
+    a.addEventListener('click', function() {
+        document.getElementById('navLinks').classList.remove('open');
+    });
+});
+
+(function() {
+
+// Theme toggle
+var toggle = document.getElementById('themeToggle');
+var saved = localStorage.getItem('asnux-theme');
+if (saved === 'light') {
+    document.body.classList.add('light');
+    toggle.textContent = '☀️';
+}
+toggle.addEventListener('click', function() {
+    document.body.classList.toggle('light');
+    var isLight = document.body.classList.contains('light');
+    toggle.textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('asnux-theme', isLight ? 'light' : 'dark');
+});
+
+var DOCS_BASE = 'https://raw.githubusercontent.com/devfrp/asnux/main';
+var DOCS_INDEX = [
+    { cat: 'Guides', items: [
+        { name: 'README', file: 'README.md' },
+    ]},
+    { cat: 'Référence', items: [
+        { name: 'Fonctionnalités', section: '#features' },
+        { name: 'Spécifications techniques', section: '#specs' },
+        { name: 'Installation', section: '#install' },
+        { name: 'Interface graphique', section: '#gui' },
+        { name: 'FAQ', section: '#faq' },
+    ]},
+];
+
+function buildDocSidebar() {
+    var sidebar = document.getElementById('docs-sidebar');
+    if (!sidebar) return;
+    var html = '';
+    DOCS_INDEX.forEach(function(cat) {
+        html += '<div class="docs-cat">';
+        html += '<div class="docs-cat-title">' + cat.cat + '</div>';
+        cat.items.forEach(function(item) {
+            if (item.file) {
+                html += '<a data-file="' + item.file + '" data-name="' + item.name + '">' + item.name + '</a>';
+            } else {
+                html += '<a data-section="' + item.section + '">' + item.name + '</a>';
+            }
+        });
+        html += '</div>';
+    });
+    sidebar.innerHTML = html;
+    sidebar.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() {
+            sidebar.querySelectorAll('a').forEach(function(el) { el.classList.remove('active'); });
+            a.classList.add('active');
+            if (a.dataset.file) {
+                loadDoc(a.dataset.file, a.dataset.name);
+            } else if (a.dataset.section) {
+                document.querySelector(a.dataset.section).scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+}
+
+function parseMarkdown(md) {
+    var h = md;
+    h = h.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    h = h.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    h = h.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    h = h.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    h = h.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
+    h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    h = h.replace(/^> (.*)/gm, '<blockquote>$1</blockquote>');
+    h = h.replace(/^---$/gm, '<hr>');
+    h = h.replace(/^- (.+)$/gm, '<li>$1</li>');
+    h = h.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
+    h = h.replace(/<\/ul>\s*<ul>/g, '');
+    h = h.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    h = h.replace(/^(?!<[a-z/])(.+)$/gm, '<p>$1</p>');
+    h = h.replace(/<p>\s*<\/p>/g, '');
+    return h;
+}
+
+async function loadDoc(file, name) {
+    var content = document.getElementById('docs-content');
+    var cacheKey = 'asnux-doc-' + file;
+    var cached = localStorage.getItem(cacheKey);
+    if (cached) {
+        try {
+            var parsed = JSON.parse(cached);
+            if (Date.now() - parsed.t < 86400000) {
+                content.innerHTML = parseMarkdown(parsed.d);
+                return;
+            }
+        } catch(e) {}
+    }
+    content.innerHTML = '<div class="docs-loading">Chargement de <strong>' + name + '</strong>...</div>';
+    try {
+        var res = await fetch(DOCS_BASE + '/' + file);
+        if (!res.ok) throw new Error('Not found');
+        var md = await res.text();
+        localStorage.setItem(cacheKey, JSON.stringify({ t: Date.now(), d: md }));
+        content.innerHTML = parseMarkdown(md);
+    } catch (e) {
+        content.innerHTML = '<div class="docs-welcome"><h3>Erreur</h3><p>Impossible de charger <strong>' + name + '</strong>. <a href="' + DOCS_BASE + '/' + file + '" target="_blank">Ouvrir sur GitHub</a></p></div>';
+    }
+}
+
+buildDocSidebar();
+})();
+
+document.querySelectorAll('.tab-btn2').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const distro = btn.dataset.distro;
+        document.querySelectorAll('.tab-btn2').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.install-code').forEach(c => c.classList.remove('active'));
+        document.getElementById('code-' + distro).classList.add('active');
+    });
+});
+
+function copyCurl() {
+    const cmd = document.getElementById('curl-cmd').textContent;
+    navigator.clipboard.writeText(cmd).then(() => {
+        const btn = document.querySelector('.btn-copy');
+        btn.textContent = '✓ Copié !';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = '📋 Copier'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+        alert('Copie echouee. Commande : ' + cmd);
+    });
+}
+</script>
+
+</body>
+</html>

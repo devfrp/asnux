@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=ASNUX Audio Engine
+Comment=Low-latency audio engine configuration for Linux
+Exec=asnux-gui
+Icon=asnux
+Terminal=false
+Type=Application
+Categories=Audio;AudioVideo;Settings;
+Keywords=audio;low-latency;ASIO;ALSA;sound

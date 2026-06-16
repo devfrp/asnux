@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="32" fill="#1a1a2e"/>
+  <circle cx="128" cy="128" r="80" fill="none" stroke="#00d4aa" stroke-width="8"/>
+  <circle cx="128" cy="128" r="40" fill="none" stroke="#00d4aa" stroke-width="6" stroke-dasharray="10 5"/>
+  <circle cx="128" cy="128" r="15" fill="#00d4aa"/>
+  <text x="128" y="240" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="16">ASNUX</text>
+</svg>

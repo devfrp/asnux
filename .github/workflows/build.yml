@@ -1,0 +1,55 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main]
+    tags: [v*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Check Rust workspace
+        run: cargo check --workspace
+
+  build-kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install kernel headers
+        run: sudo apt-get update && sudo apt-get install -y linux-headers-generic
+      - name: Build kernel module
+        run: make -C kernel
+
+  release:
+    needs: [check, build-kernel]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install kernel headers
+        run: sudo apt-get update && sudo apt-get install -y linux-headers-generic
+      - name: Build and package all formats
+        run: bash installers/build-all.sh
+      - name: Collect release assets
+        run: |
+          mkdir -p release-assets
+          find installers/dist -maxdepth 3 -name "asnux-*.deb" -exec cp {} release-assets/ \; 2>/dev/null || true
+          find installers/dist -maxdepth 3 -name "asnux-*.rpm" -exec cp {} release-assets/ \; 2>/dev/null || true
+          find installers/dist -maxdepth 3 -name "asnux-*.pkg.tar.*" -exec cp {} release-assets/ \; 2>/dev/null || true
+          find installers/dist -maxdepth 3 -name "ASNUX-*.AppImage" -exec cp {} release-assets/ \; 2>/dev/null || true
+          find installers/dist -maxdepth 3 -name "asnux-*-linux-x86_64.tar.gz" -exec cp {} release-assets/ \; 2>/dev/null || true
+          echo "Release assets:"
+          ls -la release-assets/ 2>/dev/null || echo "  (none)"
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*
+          generate_release_notes: true
