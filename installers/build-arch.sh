@@ -111,7 +111,7 @@ PKGINFO
     cp asnux.install "${STAGING}/.INSTALL"
 
     if command -v bsdtar &>/dev/null; then
-        (cd "${STAGING}" && bsdtar --format=mtree --options='!all,use-set,type,uid,gid,mode,time,size,md5,sha256,link' usr > "../.MTREE")
+        (cd "${STAGING}" && bsdtar -c --format=mtree --options='!all,use-set,type,uid,gid,mode,time,size,md5,sha256,link' usr > "../.MTREE")
         mv "../.MTREE" "${STAGING}/.MTREE"
     fi
 
