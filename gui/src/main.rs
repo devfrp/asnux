@@ -310,10 +310,8 @@ impl eframe::App for AsnuxApp {
                     }
                 }
                 DaemonMsg::CardList(cards) => {
-                    if !cards.is_empty() {
-                        if self.selected_card_index >= cards.len() {
-                            self.selected_card_index = 0;
-                        }
+                    if !cards.is_empty() && self.selected_card_index >= cards.len() {
+                        self.selected_card_index = 0;
                     }
                     self.cards = cards;
                 }
