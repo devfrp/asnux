@@ -18,7 +18,7 @@ in
 
 rustPlatform.buildRustPackage rec {
   pname = "asnux";
-  version = "1.0.0";
+  version = "1.0.1";
 
   src = fetchFromGitHub {
     owner = "asnux";

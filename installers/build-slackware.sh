@@ -4,7 +4,7 @@ set -e
 echo "=== Construction du package Slackware (txz) pour ASNUX ==="
 
 DIST_DIR="dist/slackware"
-PKG_NAME="asnux-1.0.0-x86_64"
+PKG_NAME="asnux-1.0.1-x86_64"
 mkdir -p "${DIST_DIR}/${PKG_NAME}/install"
 mkdir -p "${DIST_DIR}/${PKG_NAME}/usr/local/bin"
 mkdir -p "${DIST_DIR}/${PKG_NAME}/lib/modules"

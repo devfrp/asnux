@@ -10,7 +10,7 @@ cat > "${DIST_DIR}/asnux.rb" << 'HOMEBREW'
 class Asnux < Formula
   desc "ASNUX Low-Latency Audio Engine for Linux - Equivalent ASIO4ALL"
   homepage "https://github.com/asnux/asnux"
-  url "https://github.com/asnux/asnux/archive/refs/tags/v1.0.0.tar.gz"
+  url "https://github.com/asnux/asnux/archive/refs/tags/v1.0.1.tar.gz"
   sha256 "0000000000000000000000000000000000000000000000000000000000000000"
   license "GPL-2.0-only"
   head "https://github.com/asnux/asnux.git", branch: "main"

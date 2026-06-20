@@ -9,7 +9,7 @@ mkdir -p "${DIST_DIR}"
 cat > "${DIST_DIR}/template" << 'XBPS_TEMPLATE'
 # Template file for 'asnux'
 pkgname=asnux
-version=1.0.0
+version=1.0.1
 revision=1
 build_style=cargo
 hostmakedepends="rust linux-headers pkg-config"

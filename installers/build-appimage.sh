@@ -59,5 +59,15 @@ else
     APPIMAGETOOL=$(command -v appimagetool)
 fi
 
-ARCH=x86_64 $APPIMAGETOOL "${APP_DIR}" dist/ASNUX-1.0.0-x86_64.AppImage
-echo "AppImage cree: dist/ASNUX-1.0.0-x86_64.AppImage"
+# Handle environments without FUSE (e.g. Ubuntu 24.04+)
+if ! fusermount --version &>/dev/null && ! /sbin/mount.fuse --version &>/dev/null; then
+    echo "FUSE not available, extracting appimagetool..."
+    APPIMAGE_EXTRACT_AND_RUN_MODE=1 ARCH=x86_64 $APPIMAGETOOL "${APP_DIR}" dist/ASNUX-1.0.1-x86_64.AppImage || {
+        echo "Extracting appimagetool for fallback..."
+        (cd /tmp && $APPIMAGETOOL --appimage-extract)
+        ARCH=x86_64 /tmp/squashfs-root/AppRun "${APP_DIR}" dist/ASNUX-1.0.1-x86_64.AppImage
+    }
+else
+    ARCH=x86_64 $APPIMAGETOOL "${APP_DIR}" dist/ASNUX-1.0.1-x86_64.AppImage
+fi
+echo "AppImage cree: dist/ASNUX-1.0.1-x86_64.AppImage"

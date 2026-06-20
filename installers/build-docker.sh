@@ -80,7 +80,7 @@ cat > "${DIST_DIR}/DOCKER_HUB.md" << 'DOCKERHUB'
 
 ## Tags disponibles
 - `latest` - Derniere version stable
-- `1.0.0` - Version specifique
+- `1.0.1` - Version specifique
 
 ## Utilisation
 

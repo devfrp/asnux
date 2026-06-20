@@ -4,7 +4,7 @@ set -e
 echo "=== Construction du tarball portable ASNUX ==="
 
 DIST_DIR="dist/portable"
-TARBALL_DIR="asnux-1.0.0-linux-x86_64"
+TARBALL_DIR="asnux-1.0.1-linux-x86_64"
 
 mkdir -p "${DIST_DIR}/${TARBALL_DIR}"/{bin,lib,share}
 
@@ -85,7 +85,7 @@ cp ../kernel/asnux.ko "${DIST_DIR}/${TARBALL_DIR}/lib/"
 
 # README
 cat > "${DIST_DIR}/${TARBALL_DIR}/README.txt" << 'README'
-ASNUX v1.0.0 - Portable Linux Binary
+ASNUX v1.0.1 - Portable Linux Binary
 =====================================
 
 Installation:
@@ -104,9 +104,9 @@ README
 
 # Création du tarball
 cd "${DIST_DIR}"
-tar czf "asnux-1.0.0-linux-x86_64.tar.gz" "${TARBALL_DIR}"
-echo "Tarball cree: dist/portable/asnux-1.0.0-linux-x86_64.tar.gz"
+tar czf "asnux-1.0.1-linux-x86_64.tar.gz" "${TARBALL_DIR}"
+echo "Tarball cree: dist/portable/asnux-1.0.1-linux-x86_64.tar.gz"
 
 # SHA256
-sha256sum "asnux-1.0.0-linux-x86_64.tar.gz" > "asnux-1.0.0-linux-x86_64.tar.gz.sha256"
-echo "SHA256: $(cat asnux-1.0.0-linux-x86_64.tar.gz.sha256)"
+sha256sum "asnux-1.0.1-linux-x86_64.tar.gz" > "asnux-1.0.1-linux-x86_64.tar.gz.sha256"
+echo "SHA256: $(cat asnux-1.0.1-linux-x86_64.tar.gz.sha256)"

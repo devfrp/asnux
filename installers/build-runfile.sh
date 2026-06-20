@@ -141,9 +141,10 @@ cd "${DIST_DIR}"
 tar czf payload.tar.gz payload/
 
 # Creer le script d'extraction
-cat > install_asnux.sh << 'RUNFILE_HEADER'
+INSTALLER_NAME="install_asnux-1.0.1.sh"
+cat > "${INSTALLER_NAME}" << 'RUNFILE_HEADER'
 #!/bin/bash
-# ASNUX Audio Engine v1.0.0 - Universal Installer
+# ASNUX Audio Engine v1.0.1 - Universal Installer
 # Extrait et lance l'installation
 set -e
 
@@ -166,8 +167,8 @@ exit 0
 __ARCHIVE_MARKER__
 RUNFILE_HEADER
 
-cat payload.tar.gz >> install_asnux.sh
-chmod +x install_asnux.sh
+cat payload.tar.gz >> "${INSTALLER_NAME}"
+chmod +x "${INSTALLER_NAME}"
 
-echo "Runfile cree: ${DIST_DIR}/install_asnux.sh ($(du -h install_asnux.sh | cut -f1))"
-echo "  Utilisation: sudo ./install_asnux.sh"
+echo "Runfile cree: ${DIST_DIR}/${INSTALLER_NAME} ($(du -h ${INSTALLER_NAME} | cut -f1))"
+echo "  Utilisation: sudo ./${INSTALLER_NAME}"

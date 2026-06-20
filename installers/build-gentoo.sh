@@ -6,7 +6,7 @@ echo "=== Construction du package Gentoo/ebuild pour ASNUX ==="
 DIST_DIR="dist/gentoo"
 mkdir -p "${DIST_DIR}"
 
-cat > "${DIST_DIR}/asnux-1.0.0.ebuild" << 'EBUILD'
+cat > "${DIST_DIR}/asnux-1.0.1.ebuild" << 'EBUILD'
 # Copyright 2026 ASNUX Team
 # Distributed under the terms of the GNU General Public License v2
 
@@ -70,9 +70,9 @@ EBUILD
 
 # Generate manifest
 cat > "${DIST_DIR}/Manifest" << 'MANIFEST'
-DIST asnux-1.0.0.tar.gz 0 BLAKE2B 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+DIST asnux-1.0.1.tar.gz 0 BLAKE2B 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 MANIFEST
 
-echo "Package Gentoo cree: ${DIST_DIR}/asnux-1.0.0.ebuild"
-echo "  Installation: sudo cp ${DIST_DIR}/asnux-1.0.0.ebuild /usr/local/portage/media-sound/asnux/"
+echo "Package Gentoo cree: ${DIST_DIR}/asnux-1.0.1.ebuild"
+echo "  Installation: sudo cp ${DIST_DIR}/asnux-1.0.1.ebuild /usr/local/portage/media-sound/asnux/"
 echo "  puis: sudo emerge asnux"

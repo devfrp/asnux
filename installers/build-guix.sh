@@ -24,7 +24,7 @@ cat > "${DIST_DIR}/asnux.scm" << 'GUIX_PKG'
 (define-public asnux
   (package
     (name "asnux")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)

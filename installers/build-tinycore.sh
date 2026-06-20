@@ -10,7 +10,7 @@ mkdir -p "${DIST_DIR}"
 cat > "${DIST_DIR}/asnux.tcz.info" << 'TCZ_INFO'
 Title:          asnux.tcz
 Description:    ASNUX Low-Latency Audio Engine for Linux
-Version:        1.0.0
+Version:        1.0.1
 Author:         ASNUX Team
 Original-site:  https://github.com/asnux/asnux
 Copying-policy: GPL

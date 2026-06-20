@@ -12,7 +12,7 @@
 #include <sound/control.h>
 
 #define DRIVER_NAME "asnux"
-#define DRIVER_VERSION "1.0.0"
+#define DRIVER_VERSION "1.0.1"
 
 #define ASNUX_MAX_CARDS 8
 #define ASNUX_DEFAULT_BUFFER_SIZE 256

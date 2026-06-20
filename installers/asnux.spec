@@ -1,5 +1,5 @@
 Name: asnux
-Version: 1.0.0
+Version: 1.0.1
 Release: 1%{?dist}
 Summary: ASNUX Low-Latency Audio Engine for Linux
 License: GPLv2
@@ -46,5 +46,5 @@ modprobe -r asnux 2>/dev/null || true
 %{_prefix}/lib/systemd/system/asnux-daemon.service
 
 %changelog
-* Mon Jun 15 2026 ASNUX Team <team@asnux.io> - 1.0.0-1
+* Mon Jun 15 2026 ASNUX Team <team@asnux.io> - 1.0.1-1
 - Version initiale

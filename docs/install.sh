@@ -3,7 +3,7 @@
 # Usage : curl -sSL https://devfrp.github.io/asnux/install.sh | sudo bash
 set -e
 
-VERSION="${ASNUX_VERSION:-1.0.0}"
+VERSION="${ASNUX_VERSION:-1.0.1}"
 REPO="devfrp/asnux"
 BASE_URL="https://github.com/${REPO}/releases/download/v${VERSION}"
 

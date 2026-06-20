@@ -8,10 +8,10 @@ mkdir -p "${DIST_DIR}"
 
 cat > "${DIST_DIR}/package.yml" << 'SOLUS_PKG'
 name: asnux
-version: "1.0.0"
+version: "1.0.1"
 release: 1
 source:
-  - https://github.com/asnux/asnux/archive/v1.0.0.tar.gz
+  - https://github.com/asnux/asnux/archive/v1.0.1.tar.gz
 homepage: https://github.com/asnux/asnux
 license: GPL-2.0
 description: |
@@ -34,8 +34,8 @@ deps:
   - systemd
 
 setup:
-  - tar xf asnux-1.0.0.tar.gz
-  - cd asnux-1.0.0
+  - tar xf asnux-1.0.1.tar.gz
+  - cd asnux-1.0.1
 
 build:
   - cargo build --release --workspace

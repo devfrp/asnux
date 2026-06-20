@@ -9,7 +9,7 @@ mkdir -p "${DIST_DIR}"
 cat > "${DIST_DIR}/asnux.spec" << 'CLEAR_SPEC'
 # Clear Linux OS bundle for ASNUX
 name: asnux
-version: "1.0.0"
+version: "1.0.1"
 description: |
   ASNUX Low-Latency Audio Engine for Linux
   Bundle Clear Linux pour le moteur audio basse latence ASNUX

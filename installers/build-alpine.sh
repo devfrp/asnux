@@ -9,7 +9,7 @@ mkdir -p "${DIST_DIR}"/asnux
 cat > "${DIST_DIR}/APKBUILD" << 'APKBUILD'
 # Maintainer: ASNUX Team <team@asnux.io>
 pkgname=asnux
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=0
 pkgdesc="ASNUX Low-Latency Audio Engine - Equivalent ASIO4ALL pour Linux"
 url="https://github.com/asnux/asnux"

@@ -22,12 +22,12 @@ uninstall:
 
 dkms:
 	@echo "Installation DKMS..."
-	sudo mkdir -p /usr/src/$(MODNAME)-1.0
-	sudo cp -r * /usr/src/$(MODNAME)-1.0/
-	sudo dkms add -m $(MODNAME) -v 1.0
-	sudo dkms build -m $(MODNAME) -v 1.0
-	sudo dkms install -m $(MODNAME) -v 1.0
+	sudo mkdir -p /usr/src/$(MODNAME)-1.0.1
+	sudo cp -r * /usr/src/$(MODNAME)-1.0.1/
+	sudo dkms add -m $(MODNAME) -v 1.0.1
+	sudo dkms build -m $(MODNAME) -v 1.0.1
+	sudo dkms install -m $(MODNAME) -v 1.0.1
 
 dkms-remove:
-	sudo dkms remove -m $(MODNAME) -v 1.0 --all 2>/dev/null || true
-	sudo rm -rf /usr/src/$(MODNAME)-1.0
+	sudo dkms remove -m $(MODNAME) -v 1.0.1 --all 2>/dev/null || true
+	sudo rm -rf /usr/src/$(MODNAME)-1.0.1

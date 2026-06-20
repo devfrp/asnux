@@ -23,7 +23,7 @@ cat > "${DIST_DIR}/asnux.spec" << 'SUSE_SPEC'
 %define modname asnux
 
 Name:           asnux
-Version:        1.0.0
+Version:        1.0.1
 Release:        0
 Summary:        ASNUX Low-Latency Audio Engine for Linux
 License:        GPL-2.0-only
@@ -69,7 +69,7 @@ depmod -a 2>/dev/null || true
 %{_datadir}/applications/asnux-gui.desktop
 
 %changelog
-* Mon Jun 15 2026 ASNUX Team <team@asnux.io> - 1.0.0-0
+* Mon Jun 15 2026 ASNUX Team <team@asnux.io> - 1.0.1-0
 - Version initiale pour openSUSE
 SUSE_SPEC
 
@@ -84,10 +84,10 @@ if command -v rpmbuild &>/dev/null; then
         --define "_dbpath ${RPM_BUILD_DIR_ABS}/rpmdb"
 
     echo "Package openSUSE cree dans ${DIST_DIR}"
-    echo "  Installation: sudo zypper install ${DIST_DIR}/x86_64/asnux-1.0.0-0.x86_64.rpm"
+    echo "  Installation: sudo zypper install ${DIST_DIR}/x86_64/asnux-1.0.1-0.x86_64.rpm"
 else
     echo "rpmbuild non disponible, creation d'un tarball portable en fallback"
-    TARBALL="asnux-1.0.0-0.x86_64-suse.tar.gz"
+    TARBALL="asnux-1.0.1-0.x86_64-suse.tar.gz"
     tar czf "${DIST_DIR}/${TARBALL}" -C "${RPM_BUILD_DIR}/SOURCES" .
     echo "Fallback SUSE (tarball) cree: ${DIST_DIR}/${TARBALL}"
     echo "  Installer manuellement: sudo tar xf ${DIST_DIR}/${TARBALL} -C /"

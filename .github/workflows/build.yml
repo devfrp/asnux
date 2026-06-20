@@ -7,13 +7,22 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - name: Check Rust workspace
+        with:
+          components: rustfmt, clippy
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Clippy lint
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Cargo check
         run: cargo check --workspace
 
   build-kernel:
@@ -21,35 +30,97 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install kernel headers
-        run: sudo apt-get update && sudo apt-get install -y linux-headers-generic
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y "linux-headers-$(uname -r)" || \
+          sudo apt-get install -y linux-headers-generic
       - name: Build kernel module
         run: make -C kernel
+      - name: Check kernel module info
+        run: modinfo kernel/asnux.ko || true
 
   release:
-    needs: [check, build-kernel]
     if: startsWith(github.ref, 'refs/tags/v')
+    needs: [check, build-kernel]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+
       - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            rpm \
+            libfuse2t64 \
+            libarchive-tools \
+            wget \
+            file \
+            binutils \
+            || sudo apt-get install -y \
+            rpm \
+            libfuse2 \
+            libarchive-tools \
+            wget \
+            file \
+            binutils
       - name: Install kernel headers
-        run: sudo apt-get update && sudo apt-get install -y linux-headers-generic
-      - name: Build and package all formats
-        run: bash installers/build-all.sh
+        run: |
+          sudo apt-get install -y "linux-headers-$(uname -r)" 2>/dev/null || \
+          sudo apt-get install -y linux-headers-generic 2>/dev/null || \
+          echo "WARNING: Could not install kernel headers, kernel module build may fail"
+
+      - name: Build Rust binaries (release)
+        run: cargo build --release --workspace
+
+      - name: Strip binaries
+        run: strip target/release/asnux-daemon target/release/asnux-gui
+
+      - name: Build kernel module
+        run: make -C kernel
+
+      - name: Build release packages
+        working-directory: installers
+        run: |
+          echo "=== DEB ===" && bash build-deb.sh
+          echo "=== RPM ===" && bash build-rpm.sh
+          echo "=== Arch ===" && bash build-arch.sh
+          echo "=== AppImage ===" && bash build-appimage.sh
+          echo "=== Portable ===" && bash build-portable.sh
+          echo "=== Runfile ===" && bash build-runfile.sh
+
       - name: Collect release assets
         run: |
           mkdir -p release-assets
-          find installers/dist -maxdepth 3 -name "asnux-*.deb" -exec cp {} release-assets/ \; 2>/dev/null || true
-          find installers/dist -maxdepth 3 -name "asnux-*.rpm" -exec cp {} release-assets/ \; 2>/dev/null || true
-          find installers/dist -maxdepth 3 -name "asnux-*.pkg.tar.*" -exec cp {} release-assets/ \; 2>/dev/null || true
-          find installers/dist -maxdepth 3 -name "ASNUX-*.AppImage" -exec cp {} release-assets/ \; 2>/dev/null || true
-          find installers/dist -maxdepth 3 -name "asnux-*-linux-x86_64.tar.gz" -exec cp {} release-assets/ \; 2>/dev/null || true
-          echo "Release assets:"
-          ls -la release-assets/ 2>/dev/null || echo "  (none)"
-      - name: Create Release
+          find installers/dist -type f \( \
+            -name "asnux-*.deb" \
+            -o -name "asnux-*.rpm" \
+            -o -name "asnux-*.pkg.tar.*" \
+            -o -name "ASNUX-*.AppImage" \
+            -o -name "asnux-*-linux-x86_64.tar.gz" \
+            -o -name "install_asnux-*.sh" \
+          \) -exec cp -v {} release-assets/ \;
+          echo ""
+          echo "=== Release assets ==="
+          ls -lh release-assets/
+
+      - name: Generate SHA256 checksums
+        run: |
+          cd release-assets
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          name: "v${{ steps.version.outputs.VERSION }}"
           files: release-assets/*
           generate_release_notes: true
+          fail_on_unmatched_files: false

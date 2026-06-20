@@ -20,7 +20,7 @@ cp ../daemon/asnux-daemon.service "${RPM_BUILD_DIR}/SOURCES/lib/systemd/system/"
 
 cat > "${SPEC_FILE}" << 'SPEC'
 Name: asnux
-Version: 1.0.0
+Version: 1.0.1
 Release: 1%{?dist}
 Summary: ASNUX Low-Latency Audio Engine for Linux
 License: GPLv2
@@ -66,7 +66,7 @@ modprobe -r asnux 2>/dev/null || true
 %{_prefix}/lib/systemd/system/asnux-daemon.service
 
 %changelog
-* Mon Jun 15 2026 ASNUX Team <team@asnux.io> - 1.0.0-1
+* Mon Jun 15 2026 ASNUX Team <team@asnux.io> - 1.0.1-1
 - Version initiale
 SPEC
 
@@ -84,7 +84,7 @@ if command -v rpmbuild &>/dev/null; then
     echo "Package RPM cree dans dist/"
 else
     echo "rpmbuild non disponible, creation d'un tarball portable en fallback"
-    TARBALL="asnux-1.0.0-1.x86_64.tar.gz"
+    TARBALL="asnux-1.0.1-1.x86_64.tar.gz"
     tar czf "dist/${TARBALL}" -C "${RPM_BUILD_DIR}/SOURCES" .
     echo "Fallback RPM (tarball) cree: dist/${TARBALL}"
     echo "  Installer manuellement: sudo tar xf dist/${TARBALL} -C /"

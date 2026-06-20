@@ -16,7 +16,7 @@ cp ../gui/asnux-gui.desktop "${PKG_DIR}/"
 cat > "${PKG_DIR}/PKGBUILD" << 'PKGBUILD'
 # Maintainer: ASNUX Team <team@asnux.io>
 pkgname=asnux
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="ASNUX Low-Latency Audio Engine - Equivalent ASIO4ALL pour Linux"
 arch=('x86_64')
@@ -93,7 +93,7 @@ else
 
     cat > "${STAGING}/.PKGINFO" << PKGINFO
 pkgname = asnux
-pkgver = 1.0.0-1
+pkgver = 1.0.1-1
 pkgdesc = ASNUX Low-Latency Audio Engine - Equivalent ASIO4ALL pour Linux
 url = https://asnux.io
 builddate = $(date -u +%s)
@@ -115,7 +115,7 @@ PKGINFO
         mv "../.MTREE" "${STAGING}/.MTREE"
     fi
 
-    PKG_NAME="asnux-1.0.0-1-x86_64.pkg.tar.gz"
+    PKG_NAME="asnux-1.0.1-1-x86_64.pkg.tar.gz"
     if [ -f "${STAGING}/.MTREE" ]; then
         tar czf "../${PKG_NAME}" -C "${STAGING}" .PKGINFO .INSTALL .MTREE usr
     else

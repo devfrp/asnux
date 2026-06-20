@@ -13,7 +13,7 @@ mkdir -p "${DIST_DIR}"/lib/systemd/system
 
 cat > "${DIST_DIR}/DEBIAN/control" << 'CONTROL'
 Package: asnux
-Version: 1.0.0
+Version: 1.0.1
 Section: sound
 Priority: optional
 Architecture: amd64
@@ -66,7 +66,7 @@ fi
 cp ../gui/asnux-gui.desktop "${DIST_DIR}/usr/share/applications/"
 cp ../daemon/asnux-daemon.service "${DIST_DIR}/lib/systemd/system/"
 
-DEB_NAME="asnux-1.0.0-amd64.deb"
+DEB_NAME="asnux-1.0.1-amd64.deb"
 
 cd "${DIST_DIR}"
 echo "2.0" > debian-binary

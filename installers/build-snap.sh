@@ -8,7 +8,7 @@ mkdir -p "${SNAP_DIR}"
 
 cat > "${SNAP_DIR}/snapcraft.yaml" << 'SNAPCRAFT'
 name: asnux
-version: '1.0.0'
+version: '1.0.1'
 summary: ASNUX Low-Latency Audio Engine for Linux
 description: |
   ASNUX fournit un moteur audio basse latence pour Linux,
@@ -72,4 +72,4 @@ SNAPCRAFT
 cd "${SNAP_DIR}"
 export PATH="/snap/bin:$PATH"
 snapcraft --destructive-mode
-echo "Snap cree: dist/asnux_1.0.0_amd64.snap"
+echo "Snap cree: dist/asnux_1.0.1_amd64.snap"
