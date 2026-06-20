@@ -23,7 +23,9 @@ struct Config {
     realtime_priority: i32,
 }
 
-fn default_realtime_priority() -> i32 { 80 }
+fn default_realtime_priority() -> i32 {
+    80
+}
 
 impl Default for Config {
     fn default() -> Self {
@@ -60,8 +62,7 @@ fn read_sysfs_param(name: &str) -> Result<String> {
 
 fn write_sysfs_param(name: &str, value: &str) -> Result<()> {
     let path = format!("{}/{}", SYSFS_BASE, name);
-    fs::write(&path, value)
-        .with_context(|| format!("Failed to write {} to {}", value, path))
+    fs::write(&path, value).with_context(|| format!("Failed to write {} to {}", value, path))
 }
 
 fn is_module_loaded() -> bool {
@@ -90,9 +91,7 @@ fn load_module(config: &Config) -> Result<()> {
             .output()
             .context("Failed to get kernel release")?
             .stdout;
-        let kernel_release = String::from_utf8_lossy(&kernel_release)
-            .trim()
-            .to_string();
+        let kernel_release = String::from_utf8_lossy(&kernel_release).trim().to_string();
 
         let candidate_paths = vec![
             format!("/lib/modules/{}/extra/asnux.ko", kernel_release),
@@ -140,8 +139,8 @@ fn unload_module() -> Result<()> {
 }
 
 fn get_asnux_card_num() -> Result<u32> {
-    let content = fs::read_to_string("/proc/asound/cards")
-        .context("Failed to read /proc/asound/cards")?;
+    let content =
+        fs::read_to_string("/proc/asound/cards").context("Failed to read /proc/asound/cards")?;
 
     for line in content.lines() {
         let lower = line.to_lowercase();
@@ -158,31 +157,40 @@ fn get_asnux_card_num() -> Result<u32> {
 }
 
 fn list_cards() -> Result<serde_json::Value> {
-    let content = fs::read_to_string("/proc/asound/cards")
-        .context("Failed to read /proc/asound/cards")?;
+    let content =
+        fs::read_to_string("/proc/asound/cards").context("Failed to read /proc/asound/cards")?;
 
     let mut cards = Vec::new();
     let lines: Vec<&str> = content.lines().collect();
     let mut i = 0;
     while i < lines.len() {
         let line = lines[i].trim();
-        if line.is_empty() || !line.chars().next().map(|c| c.is_ascii_digit()).unwrap_or(false) {
+        if line.is_empty()
+            || !line
+                .chars()
+                .next()
+                .map(|c| c.is_ascii_digit())
+                .unwrap_or(false)
+        {
             i += 1;
             continue;
         }
         let num: u32 = match line.split_whitespace().next().and_then(|s| s.parse().ok()) {
             Some(n) => n,
-            None => { i += 1; continue; }
+            None => {
+                i += 1;
+                continue;
+            }
         };
         let bracket_start = line.find('[').unwrap_or(0);
         let bracket_end = line.find(']').unwrap_or(0);
         let short_name = if bracket_start > 0 && bracket_end > bracket_start {
-            line[bracket_start+1..bracket_end].trim().to_string()
+            line[bracket_start + 1..bracket_end].trim().to_string()
         } else {
             "Unknown".to_string()
         };
         let desc = if bracket_end > 0 && line.len() > bracket_end + 2 {
-            line[bracket_end+2..].trim().to_string()
+            line[bracket_end + 2..].trim().to_string()
         } else {
             String::new()
         };
@@ -202,24 +210,29 @@ fn list_cards() -> Result<serde_json::Value> {
 
 fn get_card_max_channels(card: u32) -> Result<u32> {
     let output = Command::new("amixer")
-        .arg("-c").arg(card.to_string())
+        .arg("-c")
+        .arg(card.to_string())
         .arg("scontrols")
         .output()
         .ok();
-    let is_asnux = output.map(|o| {
-        String::from_utf8_lossy(&o.stdout).contains("ASNUX")
-    }).unwrap_or(false);
+    let is_asnux = output
+        .map(|o| String::from_utf8_lossy(&o.stdout).contains("ASNUX"))
+        .unwrap_or(false);
 
     Ok(if is_asnux { 8 } else { 2 })
 }
 
 fn apply_config_alsa(config: &Config, card: u32) -> Result<()> {
-    info!("Applying config live via ALSA mixer on card {}: buffer={}, rate={}",
-          card, config.buffer_size, config.sample_rate);
+    info!(
+        "Applying config live via ALSA mixer on card {}: buffer={}, rate={}",
+        card, config.buffer_size, config.sample_rate
+    );
 
     let buffer_output = Command::new("amixer")
-        .arg("-c").arg(card.to_string())
-        .arg("sset").arg("ASNUX Buffer Size")
+        .arg("-c")
+        .arg(card.to_string())
+        .arg("sset")
+        .arg("ASNUX Buffer Size")
         .arg(config.buffer_size.to_string())
         .output()
         .context("Failed to run amixer for Buffer Size")?;
@@ -230,8 +243,10 @@ fn apply_config_alsa(config: &Config, card: u32) -> Result<()> {
     }
 
     let rate_output = Command::new("amixer")
-        .arg("-c").arg(card.to_string())
-        .arg("sset").arg("ASNUX Sample Rate")
+        .arg("-c")
+        .arg(card.to_string())
+        .arg("sset")
+        .arg("ASNUX Sample Rate")
         .arg(config.sample_rate.to_string())
         .output()
         .context("Failed to run amixer for Sample Rate")?;
@@ -250,8 +265,10 @@ fn apply_config(config: &Config) -> Result<()> {
         anyhow::bail!("ASNUX module not loaded");
     }
 
-    info!("Applying config: buffer={}, rate={}, channels={}, periods={}",
-          config.buffer_size, config.sample_rate, config.channels, config.periods);
+    info!(
+        "Applying config: buffer={}, rate={}, channels={}, periods={}",
+        config.buffer_size, config.sample_rate, config.channels, config.periods
+    );
 
     write_sysfs_param("buffer_size", &config.buffer_size.to_string())?;
     write_sysfs_param("sample_rate", &config.sample_rate.to_string())?;
@@ -268,8 +285,10 @@ fn apply_config(config: &Config) -> Result<()> {
 
 fn get_alsa_value(card: u32, control: &str) -> Result<String> {
     let output = Command::new("amixer")
-        .arg("-c").arg(card.to_string())
-        .arg("sget").arg(control)
+        .arg("-c")
+        .arg(card.to_string())
+        .arg("sget")
+        .arg(control)
         .output()
         .context("Failed to run amixer")?;
 
@@ -301,10 +320,26 @@ fn get_status() -> Result<serde_json::Value> {
     });
 
     if loaded {
-        let buf = read_sysfs_param("buffer_size").unwrap_or_default().trim().parse::<u32>().unwrap_or(0);
-        let rate = read_sysfs_param("sample_rate").unwrap_or_default().trim().parse::<u32>().unwrap_or(0);
-        let ch = read_sysfs_param("channels").unwrap_or_default().trim().parse::<u32>().unwrap_or(0);
-        let per = read_sysfs_param("periods").unwrap_or_default().trim().parse::<u32>().unwrap_or(0);
+        let buf = read_sysfs_param("buffer_size")
+            .unwrap_or_default()
+            .trim()
+            .parse::<u32>()
+            .unwrap_or(0);
+        let rate = read_sysfs_param("sample_rate")
+            .unwrap_or_default()
+            .trim()
+            .parse::<u32>()
+            .unwrap_or(0);
+        let ch = read_sysfs_param("channels")
+            .unwrap_or_default()
+            .trim()
+            .parse::<u32>()
+            .unwrap_or(0);
+        let per = read_sysfs_param("periods")
+            .unwrap_or_default()
+            .trim()
+            .parse::<u32>()
+            .unwrap_or(0);
 
         let mut live_buf = buf;
         let mut live_rate = rate;
@@ -335,8 +370,8 @@ fn set_default_engine(enable: bool) -> Result<()> {
         anyhow::bail!("PulseAudio config not found at {}", pulse_cfg);
     }
 
-    let content = fs::read_to_string(pulse_cfg)
-        .with_context(|| format!("Failed to read {}", pulse_cfg))?;
+    let content =
+        fs::read_to_string(pulse_cfg).with_context(|| format!("Failed to read {}", pulse_cfg))?;
 
     if enable {
         info!("Setting ASNUX as default audio engine");
@@ -350,8 +385,7 @@ fn set_default_engine(enable: bool) -> Result<()> {
             .with_context(|| "Cannot create backup of PulseAudio config")?;
 
         let new_content = format!("{}\n{}", content, asnux_line);
-        fs::write(pulse_cfg, &new_content)
-            .context("Cannot write PulseAudio configuration")?;
+        fs::write(pulse_cfg, &new_content).context("Cannot write PulseAudio configuration")?;
 
         info!("ASNUX added to PulseAudio config");
     } else {
@@ -405,9 +439,7 @@ fn handle_client(mut stream: std::os::unix::net::UnixStream) {
                         data: serde_json::json!({}),
                         error: Some(format!("Invalid request: {}", e)),
                     };
-                    let _ = stream.write_all(
-                        serde_json::to_string(&resp).unwrap().as_bytes(),
-                    );
+                    let _ = stream.write_all(serde_json::to_string(&resp).unwrap().as_bytes());
                     let _ = stream.write_all(b"\n");
                     return;
                 }
@@ -419,7 +451,9 @@ fn handle_client(mut stream: std::os::unix::net::UnixStream) {
                 "load" => {
                     let config: Config = match serde_json::from_value(request.params) {
                         Ok(c) => c,
-                        Err(e) => return respond_error(&mut stream, &format!("Invalid config: {}", e)),
+                        Err(e) => {
+                            return respond_error(&mut stream, &format!("Invalid config: {}", e))
+                        }
                     };
                     match load_module(&config) {
                         Ok(_) => Response {
@@ -434,24 +468,24 @@ fn handle_client(mut stream: std::os::unix::net::UnixStream) {
                         },
                     }
                 }
-                "unload" => {
-                    match unload_module() {
-                        Ok(_) => Response {
-                            status: "ok".to_string(),
-                            data: serde_json::json!({"message": "Module unloaded"}),
-                            error: None,
-                        },
-                        Err(e) => Response {
-                            status: "error".to_string(),
-                            data: serde_json::json!({}),
-                            error: Some(e.to_string()),
-                        },
-                    }
-                }
+                "unload" => match unload_module() {
+                    Ok(_) => Response {
+                        status: "ok".to_string(),
+                        data: serde_json::json!({"message": "Module unloaded"}),
+                        error: None,
+                    },
+                    Err(e) => Response {
+                        status: "error".to_string(),
+                        data: serde_json::json!({}),
+                        error: Some(e.to_string()),
+                    },
+                },
                 "configure" => {
                     let config: Config = match serde_json::from_value(request.params) {
                         Ok(c) => c,
-                        Err(e) => return respond_error(&mut stream, &format!("Invalid config: {}", e)),
+                        Err(e) => {
+                            return respond_error(&mut stream, &format!("Invalid config: {}", e))
+                        }
                     };
                     match apply_config(&config) {
                         Ok(_) => Response {
@@ -466,36 +500,34 @@ fn handle_client(mut stream: std::os::unix::net::UnixStream) {
                         },
                     }
                 }
-                "status" => {
-                    match get_status() {
-                        Ok(data) => Response {
-                            status: "ok".to_string(),
-                            data,
-                            error: None,
-                        },
-                        Err(e) => Response {
-                            status: "error".to_string(),
-                            data: serde_json::json!({}),
-                            error: Some(e.to_string()),
-                        },
-                    }
-                }
-                "list_cards" => {
-                    match list_cards() {
-                        Ok(data) => Response {
-                            status: "ok".to_string(),
-                            data,
-                            error: None,
-                        },
-                        Err(e) => Response {
-                            status: "error".to_string(),
-                            data: serde_json::json!({}),
-                            error: Some(e.to_string()),
-                        },
-                    }
-                }
+                "status" => match get_status() {
+                    Ok(data) => Response {
+                        status: "ok".to_string(),
+                        data,
+                        error: None,
+                    },
+                    Err(e) => Response {
+                        status: "error".to_string(),
+                        data: serde_json::json!({}),
+                        error: Some(e.to_string()),
+                    },
+                },
+                "list_cards" => match list_cards() {
+                    Ok(data) => Response {
+                        status: "ok".to_string(),
+                        data,
+                        error: None,
+                    },
+                    Err(e) => Response {
+                        status: "error".to_string(),
+                        data: serde_json::json!({}),
+                        error: Some(e.to_string()),
+                    },
+                },
                 "set_default_engine" => {
-                    let enable = request.params.get("enable")
+                    let enable = request
+                        .params
+                        .get("enable")
                         .and_then(|v| v.as_bool())
                         .unwrap_or(false);
                     match set_default_engine(enable) {
@@ -534,18 +566,15 @@ fn handle_client(mut stream: std::os::unix::net::UnixStream) {
 
 fn run_daemon() -> Result<()> {
     let socket_dir = Path::new(SOCKET_PATH).parent().unwrap();
-    fs::create_dir_all(socket_dir)
-        .context("Cannot create socket directory")?;
-    fs::set_permissions(socket_dir, fs::Permissions::from_mode(0o755))
-        .ok();
+    fs::create_dir_all(socket_dir).context("Cannot create socket directory")?;
+    fs::set_permissions(socket_dir, fs::Permissions::from_mode(0o755)).ok();
 
     if Path::new(SOCKET_PATH).exists() {
-        fs::remove_file(SOCKET_PATH)
-            .context("Cannot remove old socket")?;
+        fs::remove_file(SOCKET_PATH).context("Cannot remove old socket")?;
     }
 
-    let listener = std::os::unix::net::UnixListener::bind(SOCKET_PATH)
-        .context("Cannot create Unix socket")?;
+    let listener =
+        std::os::unix::net::UnixListener::bind(SOCKET_PATH).context("Cannot create Unix socket")?;
 
     fs::set_permissions(SOCKET_PATH, fs::Permissions::from_mode(0o666))
         .context("Cannot change socket permissions")?;
@@ -583,10 +612,7 @@ fn run_daemon() -> Result<()> {
 }
 
 fn main() {
-    env_logger::Builder::from_env(
-        env_logger::Env::default().default_filter_or("info"),
-    )
-    .init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
     info!("ASNUX Daemon v{}", env!("CARGO_PKG_VERSION"));
 

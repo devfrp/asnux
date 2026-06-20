@@ -69,16 +69,16 @@ struct SoundCard {
 const SOCKET_PATH: &str = "/run/asnux/asnux-daemon.sock";
 
 fn send_request(method: &str, params: serde_json::Value) -> Result<Response, String> {
-    let mut stream = UnixStream::connect(SOCKET_PATH)
-        .map_err(|e| format!("Cannot connect to daemon: {}", e))?;
+    let mut stream =
+        UnixStream::connect(SOCKET_PATH).map_err(|e| format!("Cannot connect to daemon: {}", e))?;
 
     let req = Request {
         method: method.to_string(),
         params,
     };
 
-    let mut req_str = serde_json::to_string(&req)
-        .map_err(|e| format!("Serialization error: {}", e))?;
+    let mut req_str =
+        serde_json::to_string(&req).map_err(|e| format!("Serialization error: {}", e))?;
     req_str.push('\n');
 
     stream
@@ -110,23 +110,33 @@ fn get_daemon_status() -> Result<DaemonStatus, String> {
             .get("module_loaded")
             .and_then(|v| v.as_bool())
             .unwrap_or(false),
-        buffer_size: data.get("buffer_size").and_then(|v| v.as_u64()).map(|v| v as u32),
-        sample_rate: data.get("sample_rate").and_then(|v| v.as_u64()).map(|v| v as u32),
-        channels: data.get("channels").and_then(|v| v.as_u64()).map(|v| v as u32),
-        periods: data.get("periods").and_then(|v| v.as_u64()).map(|v| v as u32),
+        buffer_size: data
+            .get("buffer_size")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as u32),
+        sample_rate: data
+            .get("sample_rate")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as u32),
+        channels: data
+            .get("channels")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as u32),
+        periods: data
+            .get("periods")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as u32),
     })
 }
 
 fn apply_config(config: &Config) -> Result<(), String> {
-    let params = serde_json::to_value(config)
-        .map_err(|e| format!("Serialization error: {}", e))?;
+    let params = serde_json::to_value(config).map_err(|e| format!("Serialization error: {}", e))?;
     send_request("configure", params)?;
     Ok(())
 }
 
 fn load_module(config: &Config) -> Result<(), String> {
-    let params = serde_json::to_value(config)
-        .map_err(|e| format!("Serialization error: {}", e))?;
+    let params = serde_json::to_value(config).map_err(|e| format!("Serialization error: {}", e))?;
     send_request("load", params)?;
     Ok(())
 }
@@ -143,8 +153,8 @@ fn set_default_engine(enable: bool) -> Result<(), String> {
 
 fn list_cards() -> Result<Vec<SoundCard>, String> {
     let resp = send_request("list_cards", serde_json::json!({}))?;
-    let cards: Vec<SoundCard> = serde_json::from_value(resp.data)
-        .map_err(|e| format!("Parse error: {}", e))?;
+    let cards: Vec<SoundCard> =
+        serde_json::from_value(resp.data).map_err(|e| format!("Parse error: {}", e))?;
     Ok(cards)
 }
 
@@ -186,10 +196,12 @@ impl AsnuxApp {
     fn refresh_cards(&mut self) {
         let tx = self.channel_tx.clone();
         self.pending_count += 1;
-        thread::spawn(move || {
-            match list_cards() {
-                Ok(cards) => { let _ = tx.send(DaemonMsg::CardList(cards)); }
-                Err(e) => { let _ = tx.send(DaemonMsg::Error(e)); }
+        thread::spawn(move || match list_cards() {
+            Ok(cards) => {
+                let _ = tx.send(DaemonMsg::CardList(cards));
+            }
+            Err(e) => {
+                let _ = tx.send(DaemonMsg::Error(e));
             }
         });
     }
@@ -197,14 +209,12 @@ impl AsnuxApp {
     fn refresh_status(&mut self) {
         let tx = self.channel_tx.clone();
         self.pending_count += 1;
-        thread::spawn(move || {
-            match get_daemon_status() {
-                Ok(status) => {
-                    let _ = tx.send(DaemonMsg::Status(status));
-                }
-                Err(e) => {
-                    let _ = tx.send(DaemonMsg::Error(format!("Error: {}", e)));
-                }
+        thread::spawn(move || match get_daemon_status() {
+            Ok(status) => {
+                let _ = tx.send(DaemonMsg::Status(status));
+            }
+            Err(e) => {
+                let _ = tx.send(DaemonMsg::Error(format!("Error: {}", e)));
             }
         });
     }
@@ -213,14 +223,12 @@ impl AsnuxApp {
         let tx = self.channel_tx.clone();
         let config = self.config.clone();
         self.pending_count += 1;
-        thread::spawn(move || {
-            match load_module(&config) {
-                Ok(_) => {
-                    let _ = tx.send(DaemonMsg::Success("Module loaded".into()));
-                }
-                Err(e) => {
-                    let _ = tx.send(DaemonMsg::Error(format!("Load failed: {}", e)));
-                }
+        thread::spawn(move || match load_module(&config) {
+            Ok(_) => {
+                let _ = tx.send(DaemonMsg::Success("Module loaded".into()));
+            }
+            Err(e) => {
+                let _ = tx.send(DaemonMsg::Error(format!("Load failed: {}", e)));
             }
         });
     }
@@ -228,14 +236,12 @@ impl AsnuxApp {
     fn send_unload(&mut self) {
         let tx = self.channel_tx.clone();
         self.pending_count += 1;
-        thread::spawn(move || {
-            match unload_module() {
-                Ok(_) => {
-                    let _ = tx.send(DaemonMsg::Success("Module unloaded".into()));
-                }
-                Err(e) => {
-                    let _ = tx.send(DaemonMsg::Error(format!("Unload failed: {}", e)));
-                }
+        thread::spawn(move || match unload_module() {
+            Ok(_) => {
+                let _ = tx.send(DaemonMsg::Success("Module unloaded".into()));
+            }
+            Err(e) => {
+                let _ = tx.send(DaemonMsg::Error(format!("Unload failed: {}", e)));
             }
         });
     }
@@ -245,14 +251,12 @@ impl AsnuxApp {
         let config = self.config.clone();
         self.pending_count += 1;
         self.config_dirty = false;
-        thread::spawn(move || {
-            match apply_config(&config) {
-                Ok(_) => {
-                    let _ = tx.send(DaemonMsg::Success("Config applied".into()));
-                }
-                Err(e) => {
-                    let _ = tx.send(DaemonMsg::Error(format!("Config failed: {}", e)));
-                }
+        thread::spawn(move || match apply_config(&config) {
+            Ok(_) => {
+                let _ = tx.send(DaemonMsg::Success("Config applied".into()));
+            }
+            Err(e) => {
+                let _ = tx.send(DaemonMsg::Error(format!("Config failed: {}", e)));
             }
         });
     }
@@ -261,19 +265,19 @@ impl AsnuxApp {
         let tx = self.channel_tx.clone();
         let enable = self.config.default_engine;
         self.pending_count += 1;
-        thread::spawn(move || {
-            match set_default_engine(enable) {
-                Ok(_) => {
-                    let _ = tx.send(DaemonMsg::Success(if enable {
+        thread::spawn(move || match set_default_engine(enable) {
+            Ok(_) => {
+                let _ = tx.send(DaemonMsg::Success(
+                    if enable {
                         "ASNUX set as default engine"
                     } else {
                         "Default engine disabled"
                     }
-                    .into()));
-                }
-                Err(e) => {
-                    let _ = tx.send(DaemonMsg::Error(format!("Failed: {}", e)));
-                }
+                    .into(),
+                ));
+            }
+            Err(e) => {
+                let _ = tx.send(DaemonMsg::Error(format!("Failed: {}", e)));
             }
         });
     }
@@ -292,9 +296,12 @@ impl eframe::App for AsnuxApp {
                     self.status_is_error = false;
 
                     if !self.config_dirty {
-                        if let (Some(buf), Some(rate), Some(ch), Some(per)) =
-                            (status.buffer_size, status.sample_rate, status.channels, status.periods)
-                        {
+                        if let (Some(buf), Some(rate), Some(ch), Some(per)) = (
+                            status.buffer_size,
+                            status.sample_rate,
+                            status.channels,
+                            status.periods,
+                        ) {
                             self.config.buffer_size = buf;
                             self.config.sample_rate = rate;
                             self.config.channels = ch;
@@ -354,17 +361,22 @@ impl eframe::App for AsnuxApp {
                     ui.horizontal(|ui| {
                         ui.label("Sound card:");
                         egui::ComboBox::from_id_source("card_selector")
-                            .selected_text(if !self.cards[self.selected_card_index].description.is_empty() {
-                                self.cards[self.selected_card_index].description.clone()
-                            } else {
-                                self.cards[self.selected_card_index].name.clone()
-                            })
+                            .selected_text(
+                                if !self.cards[self.selected_card_index].description.is_empty() {
+                                    self.cards[self.selected_card_index].description.clone()
+                                } else {
+                                    self.cards[self.selected_card_index].name.clone()
+                                },
+                            )
                             .show_ui(ui, |ui| {
                                 for (i, card) in self.cards.iter().enumerate() {
                                     let label = if card.description.is_empty() {
                                         format!("{} ({} canaux)", card.name, card.max_channels)
                                     } else {
-                                        format!("{} — {} ({} canaux)", card.name, card.description, card.max_channels)
+                                        format!(
+                                            "{} — {} ({} canaux)",
+                                            card.name, card.description, card.max_channels
+                                        )
                                     };
                                     ui.selectable_value(&mut self.selected_card_index, i, label);
                                 }
@@ -392,16 +404,20 @@ impl eframe::App for AsnuxApp {
                         ui.heading("Audio engine configuration");
                         ui.separator();
 
-                        if ui.add(
-                            egui::Slider::new(&mut self.config.buffer_size, 16..=8192)
-                                .text("Buffer size (samples)"),
-                        ).changed() {
+                        if ui
+                            .add(
+                                egui::Slider::new(&mut self.config.buffer_size, 16..=8192)
+                                    .text("Buffer size (samples)"),
+                            )
+                            .changed()
+                        {
                             self.config_dirty = true;
                         }
 
-                        let latency_ms =
-                            (self.config.buffer_size as f64 * self.config.periods as f64
-                             / self.config.sample_rate as f64) * 1000.0;
+                        let latency_ms = (self.config.buffer_size as f64
+                            * self.config.periods as f64
+                            / self.config.sample_rate as f64)
+                            * 1000.0;
                         ui.label(format!("Estimated latency: {:.1} ms", latency_ms));
 
                         let rates = [
@@ -429,7 +445,9 @@ impl eframe::App for AsnuxApp {
                                 for (i, label) in rate_labels.iter().enumerate() {
                                     ui.selectable_value(&mut rate_idx, i, *label);
                                 }
-                            }).response.changed()
+                            })
+                            .response
+                            .changed()
                         {
                             self.config_dirty = true;
                         }
@@ -441,10 +459,13 @@ impl eframe::App for AsnuxApp {
                             } else {
                                 2
                             };
-                            if ui.add(
-                                egui::Slider::new(&mut self.config.channels, 1..=max_ch)
-                                    .text("Channels"),
-                            ).changed() {
+                            if ui
+                                .add(
+                                    egui::Slider::new(&mut self.config.channels, 1..=max_ch)
+                                        .text("Channels"),
+                                )
+                                .changed()
+                            {
                                 self.config_dirty = true;
                             }
                             let ch_label = match self.config.channels {
@@ -469,13 +490,11 @@ impl eframe::App for AsnuxApp {
                             .selected_text(format!("{} periods", self.config.periods))
                             .show_ui(ui, |ui| {
                                 for (i, &p) in periods_vals.iter().enumerate() {
-                                    ui.selectable_value(
-                                        &mut per_idx,
-                                        i,
-                                        format!("{} periods", p),
-                                    );
+                                    ui.selectable_value(&mut per_idx, i, format!("{} periods", p));
                                 }
-                            }).response.changed()
+                            })
+                            .response
+                            .changed()
                         {
                             self.config_dirty = true;
                         }
@@ -501,18 +520,30 @@ impl eframe::App for AsnuxApp {
 
                 let pending = self.pending_count > 0;
                 ui.horizontal(|ui| {
-                    if ui.add_enabled(!pending, egui::Button::new("Load module")).clicked() {
+                    if ui
+                        .add_enabled(!pending, egui::Button::new("Load module"))
+                        .clicked()
+                    {
                         self.send_load();
                     }
-                    if ui.add_enabled(!pending, egui::Button::new("Apply config")).clicked() {
+                    if ui
+                        .add_enabled(!pending, egui::Button::new("Apply config"))
+                        .clicked()
+                    {
                         self.send_configure();
                     }
-                    if ui.add_enabled(!pending, egui::Button::new("Unload module")).clicked() {
+                    if ui
+                        .add_enabled(!pending, egui::Button::new("Unload module"))
+                        .clicked()
+                    {
                         self.send_unload();
                     }
                 });
 
-                if ui.add_enabled(!pending, egui::Button::new("Apply default engine")).clicked() {
+                if ui
+                    .add_enabled(!pending, egui::Button::new("Apply default engine"))
+                    .clicked()
+                {
                     self.send_default_engine();
                 }
 
@@ -521,9 +552,7 @@ impl eframe::App for AsnuxApp {
                 if let Some(status) = &self.status {
                     ui.heading("Device status");
                     if status.module_loaded {
-                        ui.label(
-                            egui::RichText::new("Module: LOADED").color(egui::Color32::GREEN),
-                        );
+                        ui.label(egui::RichText::new("Module: LOADED").color(egui::Color32::GREEN));
                         if let Some(buf) = status.buffer_size {
                             ui.label(format!("Buffer: {} samples", buf));
                         }
@@ -544,10 +573,7 @@ impl eframe::App for AsnuxApp {
                 }
 
                 ui.separator();
-                ui.hyperlink_to(
-                    "Documentation",
-                    "https://github.com/devfrp/asnux",
-                );
+                ui.hyperlink_to("Documentation", "https://github.com/devfrp/asnux");
                 ui.label(format!("ASNUX v{}", env!("CARGO_PKG_VERSION")));
             });
         });
